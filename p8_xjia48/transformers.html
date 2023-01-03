@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cybertron Magic Box</title>
+  </head>
+
+  <body>
+    <script id="vertexShader" type="not-js">
+      attribute vec3 vPosition;
+      attribute vec3 vNormal;
+      attribute vec3 vColor;
+      attribute vec2 vTexCoord;
+      varying vec3 fPosition;
+      varying vec3 fColor;
+      varying vec3 fNormal;
+      varying vec2 fTexCoord;
+      uniform mat4 uMV;
+      uniform mat4 uMVP;
+
+      void main(void) {
+        gl_Position = uMVP * vec4(vPosition, 1.0);
+        fPosition = (uMV * vec4(vPosition, 1.0)).xyz; // In camera coordinates
+        fColor = vColor;
+        fNormal = vNormal;                            // In local coordinates
+        fTexCoord = vTexCoord;
+     }
+    </script>
+
+    <script id="fragmentShader" type="not-js">
+      precision highp float;
+      varying vec3 fPosition;
+      varying vec3 fColor;
+      varying vec3 fNormal;
+      varying vec2 fTexCoord;
+      uniform mat4 uMV;
+      uniform mat3 uMVn;
+      uniform sampler2D texSampler1;
+      uniform sampler2D texSampler2;
+
+      const vec3  light1    = vec3(-0.5,-0.5,1.0);
+      const vec3  light2    = vec3(0.5,0.5,-1.0);
+      const float lightI    = 0.5;               
+      const float ambientC  = 0.5;
+      const float diffuseC  = 0.4;
+      const float specularC = 0.3;
+      const float specularE = 32.0;
+      const vec3  lightCol  = vec3(1.0,1.0,1.0);
+      const vec3  objectCol = vec3(1.0,0.6,0.0); // yellow-ish orange
+      vec2 blinnPhongDir(vec3 lightDir, vec3 n, float lightInt, float Ka,
+        float Kd, float Ks, float shininess) {
+        vec3 s = normalize(lightDir);
+        vec3 v = normalize(-fPosition);
+        vec3 h = normalize(v+s);
+        float diffuse = Ka + Kd * lightInt * max(0.0, dot(n, s));
+        float spec =  Ks * pow(max(0.0, dot(n,h)), shininess);
+        return vec2(diffuse, spec);
+      }
+
+      void main(void) {
+        vec3 texColor=texture2D(texSampler1,fTexCoord).xyz;
+        vec3 n = normalize(uMVn * fNormal);
+        vec3 ColorS1  = blinnPhongDir(light1,n,0.0   ,0.0,     0.0,     specularC,specularE).y*lightCol;
+        vec3 ColorAD1 = blinnPhongDir(light1,n,lightI,ambientC,diffuseC,0.0,      1.0      ).x*texColor;
+        vec3 ColorS2  = blinnPhongDir(light2,n,0.0   ,0.0,     0.0,     specularC,specularE).y*lightCol;
+        vec3 ColorAD2 = blinnPhongDir(light2,n,lightI,ambientC,diffuseC,0.0,      1.0      ).x*texColor;
+        gl_FragColor = vec4(ColorAD1+ColorS1+ColorAD2+ColorS2,1.0);
+      }
+    </script>
+    <h2>The Legend of the Ancient Sea</h2>
+    <canvas id="mycanvas" width="600" height="600" style="border:1px solid #0044ff;"></canvas>
+    <h2>Slider1:  <input id="slider1" type="range" min="-100" max="300" /></h2>
+    <h2>Slider2:  <input id="slider2" type="range" min="-100" max="300" /></h2>
+    <h3 style="color:orangered;">Texture resources take a while to load, please refresh if not shown.</h3> 
+    <h3>This is an interdimensional planet called X. Thousands of years ago,</h3>
+    <h3>it was surrounded by water resources. However, due to the destruction of local residents,</h3>
+    <h3>the water resources here were gradually depleted and eventually the place was turned into a ruin.</h3>
+    <h3 style="color:red;">Moving the slider2 to the right, you can see the rich water resources change to water depletion.</h3>
+    <h4>Description: The code is based on the demo architecture, uses multiple lights to enhance the lighting effect, performs </h4>
+    <h4>slightly more complex modeling (box-like trapezoid), and increases the complexity of the appearance (switching images),</h4>
+    <h4>using textures to enrich the visual appearance of your objects.</h4>
+    <br/>
+    <h5>To be straightforward, this is not a work that can get full marks. The higher workload in the last two weeks prevented me</h5>
+    <h5>from spending a lot of time on this project, and I was only able to complete the basic requirements. I am sorry for this.</h5> 
+    <h5>However, doing so many projects this semester has really made me happy, and this is arguably my favorite major course.</h5> 
+    <h5>Thank you professor for teaching this semester!</h5>
+    <script type="text/javascript" src="gl-matrix-min.js"></script>
+    <script src="transformers.js" id="module"></script>
+  </body>
+</html>

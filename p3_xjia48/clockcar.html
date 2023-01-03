@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Clock Car</title>
+  </head>
+  <body>
+    <canvas id = "mycav" width="600" height="600" style="border:1px solid #0044ff;"></canvas>
+    <h3>Acceleration: <input id="acceleration" type="range" min="1" max="25" /> &nbsp;&nbsp;&nbsp; Shaking: <input id="sk" type="range" min="0" max="30"/></h3>
+    <script src="gl-matrix-min.js"></script>
+    <script src="clock.js"></script>
+    <script src="car.js"></script>
+    <script>
+      function ClockCar() {
+          var myctx = mycav.getContext('2d')
+          acceleration.value = 1
+          sk.value = 0
+          var L = []
+          function draw() {
+              myctx.clearRect(0, 0, mycav.width, mycav.height)
+              L.forEach(function(x) {x.acceleration = acceleration.value})
+              L.forEach(function(x) {x.s = sk.value})
+              L.forEach(function(x) {x.update()})
+              L.forEach(function(x) {x.draw()})
+              window.requestAnimationFrame(draw)
+          }
+          L.push(new Clock(myctx,300,300,50,acceleration.value))
+          L.push(new Car(myctx,acceleration.value))
+          draw()
+      }
+      window.onload = ClockCar
+    </script>
+  </body>
+</html>

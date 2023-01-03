@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The moving box</title>
+    <style>
+      canvas {
+        background-color:rgb(217, 250, 239);
+      }
+    </style>
+  </head>
+  <body>
+    <h2>The moving box</h2>
+    <h4>[Left window] View by a remote external observer</h4>
+    <h4>[Right window] View from location of the camera</h4>
+    <canvas id="observerCanvas" width="400" height="400" style="border:1px solid rgb(0, 213, 255);"></canvas>
+    <canvas id="cameraCanvas" width="400" height="400" style="border:1px solid rgb(0, 213, 255);"></canvas>
+    </br>
+    <input id="slider1" type="range" min="0" max="300" /> Move Object Along Curve &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input id="slider2" type="range" min="0" max="100" /> Move Camera Around Scene
+    <script type="text/javascript" src="gl-matrix-min.js"></script>
+    <script src="box.js" id="module"></script>
+  </body>
+</html>
